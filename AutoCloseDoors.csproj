@@ -1,5 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>AutoCloseDoors</AssemblyName>
@@ -11,12 +15,21 @@
     <UnhollowedDllPath>G:\Workshop\VRising\Server\BepInEx\unhollowed</UnhollowedDllPath>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
-
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE; WETSTONE</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <!--<DefineConstants>WETSTONE</DefineConstants>-->
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="BepInEx.IL2CPP" Version="6.0.0-*" IncludeAssets="compile" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+    <PackageReference Include="System.Text.Json" Version="7.0.0-preview.6.22324.4" />
+    <PackageReference Include="Wetstone" Version="1.1.0" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Reference Include="com.stunlock.console">
       <HintPath>$(UnhollowedDllPath)\com.stunlock.console.dll</HintPath>
