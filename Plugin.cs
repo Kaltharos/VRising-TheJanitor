@@ -6,9 +6,8 @@ using HarmonyLib;
 using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
-using AutoCloseDoors.Systems;
-using AutoCloseDoors.Config;
-using AutoCloseDoors.Hooks;
+using TemplateMods;
+using TemplateMods.Systems;
 
 #if WETSTONE
 using Wetstone.API;
@@ -17,7 +16,7 @@ using Wetstone.API;
 [assembly: AssemblyVersion(BuildConfig.Version)]
 [assembly: AssemblyTitle(BuildConfig.Name)]
 
-namespace AutoCloseDoors
+namespace TemplateMods
 {
     [BepInPlugin(BuildConfig.PackageID, BuildConfig.Name, BuildConfig.Version)]
 
@@ -31,10 +30,7 @@ namespace AutoCloseDoors
     {
         private Harmony harmony;
 
-        private static ConfigEntry<bool> AutoCloseDoors;
-        private static ConfigEntry<float> AutoCloseDoors_Timer;
-        private static ConfigEntry<bool> EnableUninstall;
-        private static ConfigEntry<string> UninstallCommand;
+        private static ConfigEntry<bool> EnableChatHook;
 
         public static bool isInitialized = false;
 
@@ -70,12 +66,7 @@ namespace AutoCloseDoors
 
         public void InitConfig()
         {
-            AutoCloseDoors = Config.Bind("Config", "Enable Auto Close Doors", true, "Switch on/off auto close for doors.");
-            AutoCloseDoors_Timer = Config.Bind("Config", "Auto Close Timer", 2.0f, "How many second(s) to wait before door is automatically closed.");
-            EnableUninstall = Config.Bind("Config", "Enable Uninstall", false, "Do not enable for better performance on server.\n" +
-                "This uninstallation method is only required on servers that can't shutdown properly, like VRising on Linux Wine.\n" +
-                "On Windows, servers can be shutdown properly, and all doors is by default reverted back to normal on server shutdown.");
-            UninstallCommand = Config.Bind("Config", "Uninstall Command", "~autoclosedooruninstall", "Chat command to uninstall mod. Only work if \"Enable Uninstall\" is set to true & the user is an Admin (adminauth).");
+            EnableChatHook = Config.Bind("Config", "Enable Chat Hook", true, "Enable/disable the chat listener.");
         }
 
         public override void Load()
@@ -97,10 +88,7 @@ namespace AutoCloseDoors
         public void OnGameInitialized()
         {
             if (isInitialized) return;
-            AutoCloseDoor.isAutoCloseDoor = AutoCloseDoors.Value;
-            AutoCloseDoor.AutoCloseTimer = AutoCloseDoors_Timer.Value;
-            AutoCloseDoor.isEnableUninstall = EnableUninstall.Value;
-            AutoCloseDoor.UninstallCommand = UninstallCommand.Value;
+            ChatSystem.isEnabled = EnableChatHook.Value;
             isInitialized = true;
         }
     }

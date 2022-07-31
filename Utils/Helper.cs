@@ -1,14 +1,7 @@
 ﻿using ProjectM;
-using ProjectM.Network;
-using System;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
 
-namespace AutoCloseDoors.Utils
+namespace TemplateMods.Utils
 {
     public static class Helper
     {

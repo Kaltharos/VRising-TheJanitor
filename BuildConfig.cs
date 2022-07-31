@@ -1,9 +1,9 @@
-﻿namespace AutoCloseDoors.Config
+﻿namespace TemplateMods
 {
     public class BuildConfig
     {
-        public const string PackageID = "id.igame.duelmod";
-        public const string Name = "DuelMod";
-        public const string Version = "1.0.0";
+        public const string PackageID = "id.igame.templatemods";
+        public const string Name = "TemplateMods";
+        public const string Version = "0.0.0";
     }
 }

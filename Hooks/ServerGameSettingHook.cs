@@ -1,8 +1,7 @@
-﻿using AutoCloseDoors.Systems;
-using HarmonyLib;
+﻿using HarmonyLib;
 using ProjectM;
 
-namespace AutoCloseDoors.Hooks
+namespace TemplateMods.Hooks
 {
     [HarmonyPatch(typeof(SettingsManager), nameof(SettingsManager.VerifyServerGameSettings))]
     public class ServerGameSetting_Patch
@@ -12,7 +11,7 @@ namespace AutoCloseDoors.Hooks
         {
             if (isInitialized == false)
             {
-                if (AutoCloseDoor.isAutoCloseDoor) AutoCloseDoor.InitializeAutoClose();
+                //-- Do Something after all game data from save is loaded.
                 isInitialized = true;
             }
         }

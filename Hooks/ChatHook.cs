@@ -3,16 +3,16 @@ using ProjectM;
 using ProjectM.Network;
 using Unity.Collections;
 using Unity.Entities;
-using AutoCloseDoors.Systems;
+using TemplateMods.Systems;
 
-namespace AutoCloseDoors.Hooks
+namespace TemplateMods.Hooks
 {
     [HarmonyPatch(typeof(ChatMessageSystem), nameof(ChatMessageSystem.OnUpdate))]
     public class ChatMessageSystem_Patch
     {
         public static void Prefix(ChatMessageSystem __instance)
         {
-            if (AutoCloseDoor.isEnableUninstall)
+            if (ChatSystem.isEnabled)
             {
                 NativeArray<Entity> entities = __instance.__ChatMessageJob_entityQuery.ToEntityArray(Allocator.Temp);
                 foreach (var entity in entities)
@@ -21,11 +21,10 @@ namespace AutoCloseDoors.Hooks
                     var userData = __instance.EntityManager.GetComponentData<User>(fromData.User);
                     var chatEventData = __instance.EntityManager.GetComponentData<ChatMessageEvent>(entity);
 
-                    if (chatEventData.MessageText.Equals(AutoCloseDoor.UninstallCommand) && userData.IsAdmin)
+                    if (chatEventData.MessageText.Equals(ChatSystem.Commands) && userData.IsAdmin)
                     {
-                        AutoCloseDoor.isAutoCloseDoor = false;
-                        AutoCloseDoor.RevertAutoClose();
-                        ServerChatUtils.SendSystemMessageToClient(__instance.EntityManager, userData, "AutoCloseDoor has been uninstalled.");
+                        //-- Do something...
+                        ServerChatUtils.SendSystemMessageToClient(__instance.EntityManager, userData, "Hello!");
                         __instance.EntityManager.AddComponent<DestroyTag>(entity);
                     }
                 }

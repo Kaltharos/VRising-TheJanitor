@@ -1,14 +1,14 @@
-﻿using AutoCloseDoors.Systems;
-using HarmonyLib;
+﻿using HarmonyLib;
 using ProjectM;
 
-namespace AutoCloseDoors.Hooks
+namespace TemplateMods.Hooks
 {
     [HarmonyPatch(typeof(GameBootstrap), nameof(GameBootstrap.Start))]
     public static class GameBootstrapStart_Patch
     {
         public static void Postfix()
         {
+            //-- Do things after server world is created.
             var Plugin = new Plugin();
             Plugin.OnGameInitialized();
         }
@@ -19,7 +19,7 @@ namespace AutoCloseDoors.Hooks
     {
         public static void Prefix()
         {
-            AutoCloseDoor.RevertAutoClose();
+            //-- Do something on game server shutdown.
         }
     }
 }
