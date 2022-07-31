@@ -5,8 +5,7 @@
 
 # Specific file
 ThunderStore/
-/Hooks/AbilityCast.cs
-/Hooks/PlaceTileHook.cs
+.gitignore
 
 # User-specific files
 *.rsuser
