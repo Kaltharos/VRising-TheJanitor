@@ -49,6 +49,9 @@ Revert all doors in the game world to not close automatically.
 <details>
 <summary>Changelog</summary>
 
+`1.0.1`
+- Now properly initialize config when reloaded with wetstone.
+
 `1.0.0`
 - Initial Release
 

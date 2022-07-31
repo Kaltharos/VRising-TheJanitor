@@ -1,6 +1,4 @@
-﻿using Unity.Collections;
-using Unity.Entities;
-using AutoCloseDoors.Systems;
+﻿using AutoCloseDoors.Systems;
 using HarmonyLib;
 using ProjectM;
 
@@ -11,6 +9,7 @@ namespace AutoCloseDoors.Hooks
     {
         public static void Postfix()
         {
+            var Plugin = new Plugin();
             Plugin.OnGameInitialized();
         }
     }

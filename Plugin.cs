@@ -8,9 +8,10 @@ using Unity.Entities;
 using UnityEngine;
 using AutoCloseDoors.Systems;
 using AutoCloseDoors.Config;
+using AutoCloseDoors.Hooks;
 
 #if WETSTONE
-    using Wetstone.API;
+using Wetstone.API;
 #endif
 
 [assembly: AssemblyVersion(BuildConfig.Version)]
@@ -20,12 +21,13 @@ namespace AutoCloseDoors
 {
     [BepInPlugin(BuildConfig.PackageID, BuildConfig.Name, BuildConfig.Version)]
 
-    #if WETSTONE
-        [BepInDependency("xyz.molenzwiebel.wetstone")]
-        [Reloadable]
-    #endif
-
+#if WETSTONE
+    [BepInDependency("xyz.molenzwiebel.wetstone")]
+    [Reloadable]
+    public class Plugin : BasePlugin, IRunOnInitialized
+#else
     public class Plugin : BasePlugin
+#endif
     {
         private Harmony harmony;
 
@@ -33,6 +35,8 @@ namespace AutoCloseDoors
         private static ConfigEntry<float> AutoCloseDoors_Timer;
         private static ConfigEntry<bool> EnableUninstall;
         private static ConfigEntry<string> UninstallCommand;
+
+        public static bool isInitialized = false;
 
         public static ManualLogSource Logger;
 
@@ -90,12 +94,14 @@ namespace AutoCloseDoors
             return true;
         }
 
-        public static void OnGameInitialized()
+        public void OnGameInitialized()
         {
+            if (isInitialized) return;
             AutoCloseDoor.isAutoCloseDoor = AutoCloseDoors.Value;
             AutoCloseDoor.AutoCloseTimer = AutoCloseDoors_Timer.Value;
             AutoCloseDoor.isEnableUninstall = EnableUninstall.Value;
             AutoCloseDoor.UninstallCommand = UninstallCommand.Value;
+            isInitialized = true;
         }
     }
 }
