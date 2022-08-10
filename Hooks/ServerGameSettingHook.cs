@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using ProjectM;
 
-namespace TemplateMods.Hooks
+namespace TheJanitor.Hooks
 {
     [HarmonyPatch(typeof(SettingsManager), nameof(SettingsManager.VerifyServerGameSettings))]
     public class ServerGameSetting_Patch

@@ -6,8 +6,8 @@ using HarmonyLib;
 using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
-using TemplateMods;
-using TemplateMods.Systems;
+using TheJanitor;
+using TheJanitor.Utils;
 
 #if WETSTONE
 using Wetstone.API;
@@ -16,7 +16,7 @@ using Wetstone.API;
 [assembly: AssemblyVersion(BuildConfig.Version)]
 [assembly: AssemblyTitle(BuildConfig.Name)]
 
-namespace TemplateMods
+namespace TheJanitor
 {
     [BepInPlugin(BuildConfig.PackageID, BuildConfig.Name, BuildConfig.Version)]
 
@@ -30,7 +30,10 @@ namespace TemplateMods
     {
         private Harmony harmony;
 
-        private static ConfigEntry<bool> EnableChatHook;
+        public static ConfigEntry<bool> isChatListen;
+        public static ConfigEntry<string> onChatCommands;
+        public static ConfigEntry<bool> isAutoClean;
+        public static ConfigEntry<int> onCleanTimer;
 
         public static bool isInitialized = false;
 
@@ -66,7 +69,12 @@ namespace TemplateMods
 
         public void InitConfig()
         {
-            EnableChatHook = Config.Bind("Config", "Enable Chat Hook", true, "Enable/disable the chat listener.");
+            isChatListen = Config.Bind("Config", "Enable Chat Listen", true, "Enable/disable the chat listener.");
+            onChatCommands = Config.Bind("Config", "Chat Command", "~cleanallnow", "Clean all dropped items on the server.");
+            isAutoClean = Config.Bind("Config", "Enable Auto Cleaner", true, "Enable the auto cleaner.\n" +
+                "Does not included an already existing dropped items.\n" +
+                "Relics & death bags are also excluded.");
+            onCleanTimer = Config.Bind("Config", "Auto Clean Timer", 600, "Timer in seconds to wait before the dropped item is deleted automatically.");
         }
 
         public override void Load()
@@ -75,6 +83,8 @@ namespace TemplateMods
             Logger = Log;
             harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
+            TaskRunner.Initialize();
+
             Log.LogInfo($"Plugin {BuildConfig.Name}-v{BuildConfig.Version} is loaded!");
         }
 
@@ -82,14 +92,15 @@ namespace TemplateMods
         {
             Config.Clear();
             harmony.UnpatchSelf();
+
+            TaskRunner.Destroy();
+
             return true;
         }
 
         public void OnGameInitialized()
         {
-            if (isInitialized) return;
-            ChatSystem.isEnabled = EnableChatHook.Value;
-            isInitialized = true;
+
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using ProjectM;
 using Unity.Entities;
 
-namespace TemplateMods.Utils
+namespace TheJanitor.Utils
 {
     public static class Helper
     {

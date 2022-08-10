@@ -1,7 +1,8 @@
 ﻿using HarmonyLib;
 using ProjectM;
+using TheJanitor;
 
-namespace TemplateMods.Hooks
+namespace TheJanitor.Hooks
 {
     [HarmonyPatch(typeof(GameBootstrap), nameof(GameBootstrap.Start))]
     public static class GameBootstrapStart_Patch

@@ -6,9 +6,9 @@
   
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>TemplateMods</AssemblyName>
-    <Description>A mod template</Description>
-    <Version>0.0.0</Version>
+    <AssemblyName>TheJanitor</AssemblyName>
+    <Description>Automatically cleans all dropped items.</Description>
+    <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -21,7 +21,7 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <!--<DefineConstants>WETSTONE</DefineConstants>-->
+    <DefineConstants>WETSTONE</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>
@@ -603,6 +603,10 @@
       <HintPath>$(UnhollowedDllPath)\VivoxUnity.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="ThunderStore\" />
   </ItemGroup>
 
 </Project>
