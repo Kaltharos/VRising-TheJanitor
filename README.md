@@ -31,6 +31,7 @@ Timer in seconds to wait before the dropped item is deleted automatically.
 </details>
 
 ## Commands
+All commands are admin only!
 
 <details>
 <summary>cleanallnow</summary>
