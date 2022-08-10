@@ -10,7 +10,7 @@ Copy & paste the `TheJanitor.dll` to `\Server\BepInEx\plugins\` folder.
 Delete the `TheJanitor.dll` from your plugins folder.
 
 ## No Wetstone Version
-1. Comment `<!--<DefineConstants>WETSTONE</DefineConstants>-->` in `TheJanitor.csproj`
+1. Uncomment `<!--<DefineConstants>WETSTONE</DefineConstants>-->` in `TheJanitor.csproj`
 2. Rebuild the dll.
 
 ## Config
