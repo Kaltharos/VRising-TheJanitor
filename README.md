@@ -1,4 +1,4 @@
-# Template
+# TheJanitor
 ### Server Only Mod
 Server only mod for automatically removing all dropped items.
 Relics, and death containers are excluded.
@@ -20,7 +20,8 @@ Delete the `TheJanitor.dll` from your plugins folder.
 - `Enable Chat Listen` [default `true`]\
 Enable hooking into chat to listen to chat messages.
 - `Chat Command` [default `~cleanallnow`]\
-Clean all dropped items on the server.
+Clean all dropped items on the server.\
+Command is only usable by admin.
 - `Enable Auto Cleaner` [default `true`]\
 Enable the auto cleaner.\
 Does not included an already existing dropped items.\

@@ -70,7 +70,8 @@ namespace TheJanitor
         public void InitConfig()
         {
             isChatListen = Config.Bind("Config", "Enable Chat Listen", true, "Enable/disable the chat listener.");
-            onChatCommands = Config.Bind("Config", "Chat Command", "~cleanallnow", "Clean all dropped items on the server.");
+            onChatCommands = Config.Bind("Config", "Chat Command", "~cleanallnow", "Clean all dropped items on the server.\n" +
+                "Command is only usable by admin.");
             isAutoClean = Config.Bind("Config", "Enable Auto Cleaner", true, "Enable the auto cleaner.\n" +
                 "Does not included an already existing dropped items.\n" +
                 "Relics & death bags are also excluded.");
