@@ -4,7 +4,7 @@ Server only mod for automatically removing all dropped items.
 Relics, and death containers are excluded.
 
 ## Installation
-Copy & paste the `Mods.dll` to `\Server\BepInEx\plugins\` folder.
+Copy & paste the `TheJanitor.dll` to `\Server\BepInEx\plugins\` folder.
 
 ## Removal
 Delete the `TheJanitor.dll` from your plugins folder.
