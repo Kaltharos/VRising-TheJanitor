@@ -10,7 +10,6 @@ namespace TheJanitor.Utils
     public class TaskRunner
     {
         private static readonly ConcurrentQueue<RisingTask> TaskQueue = new();
-        private static readonly ConcurrentDictionary<Guid, RisingTaskResult> TaskResults = new();
 
         public static void Initialize()
         {
@@ -30,11 +29,6 @@ namespace TheJanitor.Utils
             return risingTask.TaskId;
         }
 
-        public static object GetResult(Guid taskId)
-        {
-            return TaskResults.TryGetValue(taskId, out var result) ? result : null;
-        }
-
         private static void Update(World world)
         {
             if (!TaskQueue.TryDequeue(out var task))
@@ -51,23 +45,15 @@ namespace TheJanitor.Utils
             object result;
             try
             {
-                Plugin.Logger.LogDebug("Executing task");
                 result = task.ResultFunction.Invoke(world);
             }
-            catch (Exception e)
-            {
-                TaskResults[task.TaskId] = new RisingTaskResult { Exception = e };
-                return;
-            }
-
-            TaskResults[task.TaskId] = new RisingTaskResult { Result = result };
+            catch { }
         }
 
         public static void Destroy()
         {
             ServerEvents.OnUpdate -= Update;
             TaskQueue.Clear();
-            TaskResults.Clear();
         }
 
         private class RisingTask
@@ -77,11 +63,5 @@ namespace TheJanitor.Utils
             public DateTime StartAfter { get; set; }
             public Func<World, object> ResultFunction { get; set; }
         }
-    }
-
-    public class RisingTaskResult
-    {
-        public object Result { get; set; }
-        public Exception Exception { get; set; }
     }
 }

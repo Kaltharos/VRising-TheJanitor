@@ -46,6 +46,9 @@ Clean all dropped items on the server.
 <details>
 <summary>Changelog</summary>
 
+`1.0.1`
+- Minor optimization
+
 `1.0.0`
 - Initial Release
 
