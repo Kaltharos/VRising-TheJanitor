@@ -36,10 +36,13 @@ namespace TheJanitor.Utils
                 return;
             }
 
-            if (!task.RunNow && task.StartAfter > DateTime.UtcNow)
+            if (!task.RunNow)
             {
-                TaskQueue.Enqueue(task);
-                return;
+                if (task.StartAfter > DateTime.UtcNow)
+                {
+                    TaskQueue.Enqueue(task);
+                    return;
+                }
             }
 
             object result;

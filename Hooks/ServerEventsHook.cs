@@ -7,7 +7,7 @@ namespace TheJanitor.Hooks
 {
     public delegate void OnUpdateEventHandler(World world);
 
-    [HarmonyPatch(typeof(ServerTimeSystem_Server), nameof(ServerTimeSystem_Server.OnUpdate))]
+    [HarmonyPatch(typeof(StatChangeSystem), nameof(StatChangeSystem.OnUpdate))]
     public static class ServerEvents
     {
         public static event OnUpdateEventHandler OnUpdate;
