@@ -4,6 +4,7 @@ using ProjectM;
 using System;
 using TheJanitor.Utils;
 using ProjectM.Shared;
+using Unity.Entities;
 
 namespace TheJanitor.Hooks
 {
@@ -25,7 +26,8 @@ namespace TheJanitor.Hooks
                             {
                                 TaskRunner.Start(taskWorld =>
                                 {
-                                    DestroyUtility.Destroy(__instance.EntityManager, entity);
+                                    //DestroyUtility.Destroy(__instance.EntityManager, entity);
+                                    __instance.EntityManager.AddComponent<DestroyTag>(entity);
                                     return new object();
                                 }, false, TimeSpan.FromSeconds(Plugin.onCleanTimer.Value));
                             }
