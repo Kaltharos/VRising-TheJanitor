@@ -9,10 +9,6 @@ Copy & paste the `TheJanitor.dll` to `\Server\BepInEx\plugins\` folder.
 ## Removal
 Delete the `TheJanitor.dll` from your plugins folder.
 
-## No Wetstone Version
-1. Uncomment `<!--<DefineConstants>WETSTONE</DefineConstants>-->` in `TheJanitor.csproj`
-2. Rebuild the dll.
-
 ## Config
 <details>
 <summary>Config</summary>
@@ -45,6 +41,9 @@ Clean all dropped items on the server.
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`1.0.2`
+- Update for Gloomrot
 
 `1.0.1`
 - Minor optimization

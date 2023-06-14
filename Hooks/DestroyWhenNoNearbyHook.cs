@@ -1,40 +1,42 @@
-﻿using HarmonyLib;
-using Unity.Collections;
+﻿using System;
+using HarmonyLib;
 using ProjectM;
-using System;
-using TheJanitor.Utils;
 using ProjectM.Shared;
-using Unity.Entities;
+using TheJanitor.Utils;
+using Unity.Collections;
 
-namespace TheJanitor.Hooks
+namespace TheJanitor.Hooks;
+
+[HarmonyPatch]
+public static class DestroyWhenNoNearbyHook
 {
-    [HarmonyPatch(typeof(DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn), nameof(DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn.OnUpdate))]
-    public class DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn_Patch
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn),
+        nameof(DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn.OnUpdate))]
+    private static void DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn_OnUpdate(
+        DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn __instance)
     {
-        private static void Postfix(DestroyWhenNoCharacterNearbyAfterDurationSystem_Spawn __instance)
+        if (__instance?.__OnUpdate_LambdaJob0_entityQuery == null) return;
+        if (!Plugin.IsAutoClean.Value) return;
+        
+        var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
+        foreach (var entity in entities)
         {
-            if (__instance.__OnUpdate_LambdaJob0_entityQuery != null)
+            try
             {
-                if (Plugin.isAutoClean.Value)
+                if (__instance.EntityManager.HasComponent<ItemPickup>(entity))
                 {
-                    var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
-                    foreach (var entity in entities)
+                    TaskRunner.Start(taskWorld =>
                     {
-                        try
-                        {
-                            if (__instance.EntityManager.HasComponent<ItemPickup>(entity))
-                            {
-                                TaskRunner.Start(taskWorld =>
-                                {
-                                    //DestroyUtility.Destroy(__instance.EntityManager, entity);
-                                    __instance.EntityManager.AddComponent<DestroyTag>(entity);
-                                    return new object();
-                                }, false, TimeSpan.FromSeconds(Plugin.onCleanTimer.Value));
-                            }
-                        }
-                        catch { }
-                    }
+                        DestroyUtility.CreateDestroyEvent(__instance.EntityManager,entity, DestroyReason.Default, DestroyDebugReason.None);
+                        DestroyUtility.Destroy(__instance.EntityManager,entity);
+                        return new object();
+                    }, false, TimeSpan.FromSeconds(Plugin.OnCleanTimer.Value));
                 }
+            }
+            catch
+            {
+                // ignored
             }
         }
     }
