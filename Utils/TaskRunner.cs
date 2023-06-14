@@ -7,7 +7,7 @@ using Unity.Entities;
 
 namespace TheJanitor.Utils
 {
-    public class TaskRunner
+    public static class TaskRunner
     {
         private static readonly ConcurrentQueue<RisingTask> TaskQueue = new();
 
@@ -45,12 +45,14 @@ namespace TheJanitor.Utils
                 }
             }
 
-            object result;
             try
             {
-                result = task.ResultFunction.Invoke(world);
+                task.ResultFunction.Invoke(world);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         public static void Destroy()
@@ -61,10 +63,10 @@ namespace TheJanitor.Utils
 
         private class RisingTask
         {
-            public Guid TaskId { get; set; } = Guid.NewGuid();
-            public bool RunNow { get; set; }
-            public DateTime StartAfter { get; set; }
-            public Func<World, object> ResultFunction { get; set; }
+            public Guid TaskId { get; init; } = Guid.NewGuid();
+            public bool RunNow { get; init; }
+            public DateTime StartAfter { get; init; }
+            public Func<World, object> ResultFunction { get; init; }
         }
     }
 }

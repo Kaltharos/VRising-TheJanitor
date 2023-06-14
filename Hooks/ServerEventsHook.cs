@@ -1,26 +1,29 @@
 ﻿using System;
 using HarmonyLib;
 using ProjectM;
+using ProjectM.Gameplay.Systems;
 using Unity.Entities;
 
-namespace TheJanitor.Hooks
-{
-    public delegate void OnUpdateEventHandler(World world);
+namespace TheJanitor.Hooks;
 
+public delegate void OnUpdateEventHandler(World world);
+
+[HarmonyPatch]
+public static class ServerEvents
+{
+    public static event OnUpdateEventHandler OnUpdate;
+
+    [HarmonyPostfix]
     [HarmonyPatch(typeof(StatChangeSystem), nameof(StatChangeSystem.OnUpdate))]
-    public static class ServerEvents
+    private static void StatChangeSystem_OnUpdate(ServerTimeSystem_Server __instance)
     {
-        public static event OnUpdateEventHandler OnUpdate;
-        private static void Postfix(ServerTimeSystem_Server __instance)
+        try
         {
-            try
-            {
-                OnUpdate?.Invoke(__instance.World);
-            }
-            catch (Exception e)
-            {
-                Plugin.Logger.LogError(e);
-            }
+            OnUpdate?.Invoke(__instance.World);
+        }
+        catch (Exception e)
+        {
+            Plugin.Logger.LogError(e);
         }
     }
 }

@@ -1,107 +1,58 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
 using System.Reflection;
-using Unity.Entities;
-using UnityEngine;
-using TheJanitor;
+using BepInEx.Unity.IL2CPP;
+using Bloodstone.API;
 using TheJanitor.Utils;
-
-#if WETSTONE
-using Wetstone.API;
-#endif
-
-[assembly: AssemblyVersion(BuildConfig.Version)]
-[assembly: AssemblyTitle(BuildConfig.Name)]
 
 namespace TheJanitor
 {
-    [BepInPlugin(BuildConfig.PackageID, BuildConfig.Name, BuildConfig.Version)]
-
-#if WETSTONE
-    [BepInDependency("xyz.molenzwiebel.wetstone")]
+    [BepInPlugin(PackageID, Name, Version)]
+    [BepInDependency("gg.deca.Bloodstone")]
     [Reloadable]
     public class Plugin : BasePlugin, IRunOnInitialized
-#else
-    public class Plugin : BasePlugin
-#endif
     {
-        private Harmony harmony;
+        private const string PackageID = "kaltharos.vrising.thejanitor";
+        private const string Name = "TheJanitor";
+        private const string Version = "1.0.2";
 
-        public static ConfigEntry<bool> isChatListen;
-        public static ConfigEntry<string> onChatCommands;
-        public static ConfigEntry<bool> isAutoClean;
-        public static ConfigEntry<int> onCleanTimer;
+        private static Harmony Harmony { get; set; }
+        public static ConfigEntry<bool> IsChatListen { get; private set; }
+        public static ConfigEntry<string> OnChatCommands { get; private set; }
+        public static ConfigEntry<bool> IsAutoClean { get; private set; }
+        public static ConfigEntry<int> OnCleanTimer { get; private set; }
+        public static ManualLogSource Logger { get; private set; }
 
-        public static bool isInitialized = false;
-
-        public static ManualLogSource Logger;
-
-        private static World _serverWorld;
-        public static World Server
+        private void InitConfig()
         {
-            get
-            {
-                if (_serverWorld != null) return _serverWorld;
-
-                _serverWorld = GetWorld("Server")
-                    ?? throw new System.Exception("There is no Server world (yet). Did you install a server mod on the client?");
-                return _serverWorld;
-            }
-        }
-
-        public static bool IsServer => Application.productName == "VRisingServer";
-
-        private static World GetWorld(string name)
-        {
-            foreach (var world in World.s_AllWorlds)
-            {
-                if (world.Name == name)
-                {
-                    return world;
-                }
-            }
-
-            return null;
-        }
-
-        public void InitConfig()
-        {
-            isChatListen = Config.Bind("Config", "Enable Chat Listen", true, "Enable/disable the chat listener.");
-            onChatCommands = Config.Bind("Config", "Chat Command", "~cleanallnow", "Clean all dropped items on the server.\n" +
-                "Command is only usable by admin.");
-            isAutoClean = Config.Bind("Config", "Enable Auto Cleaner", true, "Enable the auto cleaner.\n" +
-                "Does not included an already existing dropped items.\n" +
-                "Relics & death bags are also excluded.");
-            onCleanTimer = Config.Bind("Config", "Auto Clean Timer", 600, "Timer in seconds to wait before the dropped item is deleted automatically.");
+            IsChatListen = Config.Bind("Config", "Enable Chat Listen", true, "Toggle to activate/deactivate the chat monitoring system. This determines if the system listens to chat messages in real-time.");
+            OnChatCommands = Config.Bind("Config", "Chat Command", "~cleanallnow", "This command, when executed by an admin, triggers the purging of all items presently dropped on the server. It doesn't affect items dropped before the command was set.");
+            IsAutoClean = Config.Bind("Config", "Enable Auto Cleaner", true, "Toggle to activate/deactivate the automatic cleaner. When activated, the system automatically removes newly dropped items from the server, except for relics and death bags.");
+            OnCleanTimer = Config.Bind("Config", "Auto Clean Timer", 600, "Determines the delay (in seconds) before the automatic cleaner removes a dropped item. This timer starts once the item is dropped.");
         }
 
         public override void Load()
         {
             InitConfig();
             Logger = Log;
-            harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
+            Harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PackageID);
             TaskRunner.Initialize();
-
-            Log.LogInfo($"Plugin {BuildConfig.Name}-v{BuildConfig.Version} is loaded!");
+            Log.LogInfo($"Plugin {Name}-v{Version} is loaded!");
         }
 
         public override bool Unload()
         {
             Config.Clear();
-            harmony.UnpatchSelf();
-
+            Harmony.UnpatchSelf();
             TaskRunner.Destroy();
-
             return true;
         }
 
         public void OnGameInitialized()
         {
-
+            //
         }
     }
 }

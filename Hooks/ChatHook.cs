@@ -1,49 +1,51 @@
-﻿using HarmonyLib;
+﻿using Bloodstone.API;
+using HarmonyLib;
 using ProjectM;
 using ProjectM.Network;
+using ProjectM.Shared;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 
-namespace TheJanitor.Hooks
+namespace TheJanitor.Hooks;
+
+[HarmonyPatch]
+public static class ChatHook
 {
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(ChatMessageSystem), nameof(ChatMessageSystem.OnUpdate))]
-    public class ChatMessageSystem_Patch
+    public static void ChatMessageSystem_OnUpdate(ref ChatMessageSystem __instance)
     {
-        public static void Prefix(ChatMessageSystem __instance)
+        if (!Plugin.IsChatListen.Value) return;
+        
+        var entities = __instance.__ChatMessageJob_entityQuery.ToEntityArray(Allocator.Temp);
+        foreach (var entity in entities)
         {
-            if (Plugin.isChatListen.Value)
+            var fromData = __instance.EntityManager.GetComponentData<FromCharacter>(entity);
+            var userData = __instance.EntityManager.GetComponentData<User>(fromData.User);
+            var chatEventData = __instance.EntityManager.GetComponentData<ChatMessageEvent>(entity);
+
+            if (chatEventData.MessageText.Equals(Plugin.OnChatCommands.Value) && userData.IsAdmin)
             {
-                NativeArray<Entity> entities = __instance.__ChatMessageJob_entityQuery.ToEntityArray(Allocator.Temp);
-                foreach (var entity in entities)
+                var query = VWorld.Server.EntityManager.CreateEntityQuery(new EntityQueryDesc()
                 {
-                    var fromData = __instance.EntityManager.GetComponentData<FromCharacter>(entity);
-                    var userData = __instance.EntityManager.GetComponentData<User>(fromData.User);
-                    var chatEventData = __instance.EntityManager.GetComponentData<ChatMessageEvent>(entity);
-
-                    if (chatEventData.MessageText.Equals(Plugin.onChatCommands.Value) && userData.IsAdmin)
+                    All = new[]
                     {
-                        var query = Plugin.Server.EntityManager.CreateEntityQuery(new EntityQueryDesc()
-                        {
-                            All = new ComponentType[]
-                                {
-                                    ComponentType.ReadOnly<DestroyWhenNoCharacterNearbyAfterDuration>(),
-                                    ComponentType.ReadOnly<ItemPickup>(),
-                                    ComponentType.ReadOnly<LocalToWorld>()
-                                },
-                            Options = EntityQueryOptions.IncludeDisabled
-                        });
-
-                        var arrays = query.ToEntityArray(Allocator.Temp);
-                        foreach (var item in arrays)
-                        {
-                            __instance.EntityManager.AddComponent<DestroyTag>(item);
-                        }
-                        ServerChatUtils.SendSystemMessageToClient(__instance.EntityManager, userData, "All dropped item entities has been cleared.");
-
-                        __instance.EntityManager.AddComponent<DestroyTag>(entity);
-                    }
+                        ComponentType.ReadOnly<DestroyWhenNoCharacterNearbyAfterDuration>(),
+                        ComponentType.ReadOnly<ItemPickup>(),
+                        ComponentType.ReadOnly<LocalToWorld>()
+                    },
+                    Options = EntityQueryOptions.IncludeDisabled
+                });
+                    
+                foreach (var e in query.ToEntityArray(Allocator.Temp))
+                {
+                    DestroyUtility.CreateDestroyEvent(__instance.EntityManager,e, DestroyReason.Default, DestroyDebugReason.None);
+                    DestroyUtility.Destroy(__instance.EntityManager,e);
                 }
+                   
+                ServerChatUtils.SendSystemMessageToClient(__instance.EntityManager, userData,
+                    "All dropped item entities has been cleared.");
             }
         }
     }
